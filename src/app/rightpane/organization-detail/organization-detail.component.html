@@ -1,0 +1,36 @@
+<div class="table-responsive">
+  <table class="table table-sm table-bordered">
+    <thead class="thead-light">
+    <tr>
+      <th>Organization Name</th>
+      <th>Organization Description</th>
+      <th>EVS Provider</th>
+      <th>Modified By</th>
+      <th>Created On</th>
+      <th>Account Manager</th>
+      <th>Status</th>
+      <th>Organization Level</th>
+      <th>Parent Organizations</th>
+      <th>Child Organizations</th>
+      <th>Logical Devices</th>
+      <th>Device Logs</th>
+    </tr>
+    </thead>
+    <tbody class="well">
+    <tr *ngFor="let organization of organizations">
+      <td>{{organization.organizationName}}</td>
+      <td>{{organization.organizationDescription}}</td>
+      <td>{{organization.evsProvider}}</td>
+      <td>{{organization.modifiedBy}}</td>
+      <td>{{organization.createdOn}}</td>
+      <td>{{organization.accountManager}}</td>
+      <td>{{organization.status}}</td>
+      <td>{{organization.organizationLevel}}</td>
+      <td>{{organization.parentOrganizations}}</td>
+      <td>{{organization.childOrganizations}}</td>
+      <td>{{organization.logicalDevices}}</td>
+      <td>{{organization.deviceLogs}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

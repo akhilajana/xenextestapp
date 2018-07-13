@@ -1,0 +1,59 @@
+<div class="table-responsive">
+  <table class="table table-sm table-bordered">
+
+    <thead >
+    <tr>
+      <th colspan="6"><h4>Rooms</h4></th>
+      <td>
+        <a href="#" class="btn btn-success btn-sm">
+          <span class="glyphicon glyphicon-export"></span> Export to Excel
+        </a>
+      </td>
+    </tr>
+    <tr class="thead-light">
+      <th>Room Name</th>
+      <th>Description</th>
+      <th>Hospital Name</th>
+      <th>Room Protocol Name</th>
+      <th>Created On</th>
+      <th>Status</th>
+      <th>Edit Room</th>
+    </tr>
+
+    </thead>
+
+    <tbody class="well">
+    <tr >
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>
+        <a href="#" class="btn btn-info btn-sm">
+          <span class="glyphicon glyphicon-plus"></span> Add New Room
+        </a>
+      </td>
+    </tr>
+    <tr *ngFor="let room of rooms">
+      <td>{{room.roomName}}</td>
+      <td>{{room.roomDescription}}</td>
+      <td>{{room.hospitalName}}</td>
+      <td>{{room.roomProtocolName}}</td>
+      <td>{{room.createdOn}}</td>
+      <td>{{room.status}}</td>
+      <td>
+        &nbsp;
+        <a href="#">
+        <span class="glyphicon glyphicon-edit"></span>
+      </a> &nbsp;
+        <a href="#">
+          <span class="glyphicon glyphicon-trash red"></span>
+        </a>
+      </td>
+    </tr>
+
+    </tbody>
+  </table>
+</div>

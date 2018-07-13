@@ -1,0 +1,21 @@
+.navbar
+{
+  background-color: #351c4d;
+  border-color: #351c4d;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.breadcrumb,filters_row
+{
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom:5px;
+}
+
+hr
+{
+  border-color: #F5AB99;
+  margin-top:3px;
+  margin-bottom:0px;
+}
