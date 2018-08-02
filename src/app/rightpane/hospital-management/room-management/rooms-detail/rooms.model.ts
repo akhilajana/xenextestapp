@@ -1,6 +1,9 @@
 export class Rooms {
 
-  constructor( public roomName: string,
+  public isEditable : boolean = false;
+
+  constructor( public roomId: number,
+               public roomName: string,
                public roomDescription: string,
                public hospitalName: string,
                public roomProtocolName: string,

@@ -1,0 +1,155 @@
+<div class="table-responsive">
+
+  <!--<nv-editable-table [tableHeaders]="roomHeaders" [tableRows]="rooms"></nv-editable-table>-->
+  <table class="table table-sm table-bordered table-hover" data-page-length='10' appSortedTable
+         (sorted)="onSorted($event)" id="roomsTable">
+
+    <thead>
+    <tr>
+      <th colspan="4"><h4>Rooms</h4></th>
+      <td colspan="2">
+        <div class="input-group">
+          <input id="search_org" type="text" class="form-control" name="search_org" placeholder="Search..">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+        </div>
+      </td>
+      <td>
+        <a href="#" class="btn btn-success btn-sm" (click)="tableToExcel()">
+          <span class="glyphicon glyphicon-export"></span> Export to Excel
+        </a>
+      </td>
+    </tr>
+    <tr class="thead-light">
+      <th app-sortable-column="roomName">Room Name <!--<a href="#">
+        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
+      </a>-->
+      </th>
+      <th app-sortable-column="roomDescription">Description <!--<a href="#">
+        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
+      </a>--></th>
+      <th app-sortable-column="roomHospitalName">Hospital Name</th>
+      <th app-sortable-column="roomProtocolName">Room Protocol Name</th>
+      <th app-sortable-column="createdOn">Created On</th>
+      <th app-sortable-column="status">Status</th>
+      <th>Edit Room</th>
+    </tr>
+
+    </thead>
+
+    <tbody class=" well">
+    <tr>
+      <td><input class="input-sm" type="text" placeholder="Enter room name" #roomName></td>
+      <td><input class="input-sm" type="text" placeholder="Enter room description" #roomDescription></td>
+      <td><input class="input-sm" type="text" placeholder="Enter hospital name" #hospitalName></td>
+      <td><input class="input-sm" type="text" placeholder="Enter room protocol name" #roomProtocolName></td>
+      <td><input class="input-sm" type="text" placeholder="Enter created date" #createdDate></td>
+      <td><input class="input-sm" type="text" placeholder="Enter status" #status></td>
+      <td>
+        <a class="btn btn-info btn-sm" (click)="addRoom()">
+          <span class="glyphicon glyphicon-plus"></span> Add New Room
+        </a>
+      </td>
+    </tr>
+    <tr *ngFor="let room of rooms; let roomIndex = index" >
+      <td>
+        <span *ngIf="room.roomId!==editRowId">{{room.roomName}}</span>
+        <input *ngIf="room.roomId===editRowId" type="text" name="roomName" class="form-control" [(ngModel)]="room.roomName" placeholder="Room Name" required />
+      </td>
+      <td>
+        <span *ngIf=" room.roomId!==editRowId"> {{room.roomDescription}} </span>
+        <input *ngIf=" room.roomId===editRowId" type="text" name="roomDescription" class="form-control" [(ngModel)]="room.roomDescription" placeholder="Room Description" required />
+      </td>
+      <td>
+        <span *ngIf=" room.roomId!==editRowId">{{room.hospitalName}}</span>
+        <input *ngIf=" room.roomId===editRowId" type="text" name="hospitalName" class="form-control" [(ngModel)]="room.hospitalName" placeholder="Hospital Name" required />
+
+      </td>
+      <td>
+        <span *ngIf=" room.roomId!==editRowId">{{room.roomProtocolName}}</span>
+        <input *ngIf=" room.roomId===editRowId" type="text" name="roomProtocolName" class="form-control" [(ngModel)]="room.roomProtocolName" placeholder="Room Protocol Name" required />
+      </td>
+      <td>
+        <span *ngIf=" room.roomId!==editRowId">{{room.createdOn}}</span>
+        <input *ngIf=" room.roomId===editRowId" type="text" name="createdOn" class="form-control" [(ngModel)]="room.createdOn" placeholder="Created on" required />
+      </td>
+      <td>
+        <span *ngIf=" room.roomId!==editRowId">{{room.status}}</span>
+        <input *ngIf=" room.roomId===editRowId" type="text" name="status" class="form-control" [(ngModel)]="room.status" placeholder="Status" required />
+      </td>
+      <td>
+        <a>
+          <span *ngIf= "room.roomId!==editRowId" class="glyphicon glyphicon-edit" (click)="editRoom(room.roomId)"></span>
+          <span *ngIf= "room.roomId===editRowId" class="glyphicon glyphicon-floppy-save green" (click)="saveRoom(room)"></span>
+
+        </a> &nbsp;
+        <a>
+          <span *ngIf= "room.roomId!==editRowId"class="glyphicon glyphicon-trash red" (click)="deleteRoom(roomIndex)"></span>
+          <span *ngIf= "room.roomId===editRowId"class="glyphicon glyphicon-floppy-remove red" (click)="cancelSavedRoom(roomIndex)"></span>
+        </a>
+      </td>
+
+    </tr>
+
+    </tbody>
+
+    <tfoot>
+    <tr class="tfoot-light">
+      <td colspan="6">Page 1 of 5</td>
+      <td colspan="1">
+        <nav>
+          <ul class="pagination pagination-sm k-justify-content-end">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </td>
+
+      <!-- <td colspan="5">
+         <ul class="pager">
+           <li><a class="previous">First</a></li>
+           <li>
+             <a href="#">
+               <span class="glyphicon glyphicon-chevron-left"></span>
+             </a></li>
+           <li>
+             <ul class="pagination pagination-sm">
+               <li><a href="#">1</a></li>
+               <li><a href="#">2</a></li>
+               <li><a href="#">3</a></li>
+               <li><a href="#">4</a></li>
+               <li><a href="#">5</a></li>
+
+             </ul>
+           </li>
+           <li>
+             <a href="#">
+               <span class="glyphicon glyphicon-chevron-right"></span>
+             </a></li>
+           <li><a class="next">Last</a></li>
+         </ul>
+
+       </td>
+       <td colspan="2">
+         <div class="dropdown" appDropdown>
+           <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">10
+             <span class="caret"></span></button>
+           <span>items per page</span>
+           <ul class="dropdown-menu">
+             <li><a href="#">20</a></li>
+             <li><a href="#">30</a></li>
+             <li><a href="#">50</a></li>
+           </ul>
+         </div>
+       </td>-->
+    </tr>
+    </tfoot>
+  </table>
+
+</div>

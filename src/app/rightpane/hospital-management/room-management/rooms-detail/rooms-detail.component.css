@@ -1,0 +1,23 @@
+.thead-light
+{
+  background-color: #FEB47B;
+}
+
+.tfoot-light
+{
+  background-color: #FFDFC7;
+}
+
+.red
+{
+  color: indianred;
+}
+
+.green
+{
+  color: seagreen;
+}
+
+.pagination {
+  margin: 0px;
+}
