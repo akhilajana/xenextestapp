@@ -1,6 +1,8 @@
 <div class="table-responsive">
 
   <!--<nv-editable-table [tableHeaders]="roomHeaders" [tableRows]="rooms"></nv-editable-table>-->
+  <form #newRoomData="ngForm" (ngSubmit) ="addRoom()">
+
   <table class="table table-sm table-bordered table-hover" data-page-length='10' appSortedTable
          (sorted)="onSorted($event)" id="roomsTable">
 
@@ -37,19 +39,22 @@
     </thead>
 
     <tbody class=" well">
+
     <tr>
-      <td><input class="input-sm" type="text" placeholder="Enter room name" #roomName></td>
-      <td><input class="input-sm" type="text" placeholder="Enter room description" #roomDescription></td>
-      <td><input class="input-sm" type="text" placeholder="Enter hospital name" #hospitalName></td>
-      <td><input class="input-sm" type="text" placeholder="Enter room protocol name" #roomProtocolName></td>
-      <td><input class="input-sm" type="text" placeholder="Enter created date" #createdDate></td>
-      <td><input class="input-sm" type="text" placeholder="Enter status" #status></td>
-      <td>
-        <a class="btn btn-info btn-sm" (click)="addRoom()">
-          <span class="glyphicon glyphicon-plus"></span> Add New Room
-        </a>
-      </td>
+        <td><input class="input-sm" type="text" placeholder="Enter room name" #roomName name="roomName" ngModel></td>
+        <td><input class="input-sm" type="text" placeholder="Enter room description" #roomDescription name="roomDescription" ngModel></td>
+        <td><input class="input-sm" type="text" placeholder="Enter hospital name" #hospitalName name="hospitalName" ngModel></td>
+        <td><input class="input-sm" type="text" placeholder="Enter room protocol name" #roomProtocolName name="roomProtocolName" ngModel></td>
+        <td><input class="input-sm" type="text" placeholder="Enter created date" #createdDate name="createdDate" ngModel></td>
+        <td><input class="input-sm" type="text" placeholder="Enter status" #status name="status" ngModel></td>
+        <td>
+          <button class="btn btn-info btn-sm" [disabled]="!newRoomData.valid">
+            <span class="glyphicon glyphicon-plus"></span> Add New Room
+          </button>
+        </td>
+
     </tr>
+
     <tr *ngFor="let room of rooms; let roomIndex = index" >
       <td>
         <span *ngIf="room.roomId!==editRowId">{{room.roomName}}</span>
@@ -151,5 +156,6 @@
     </tr>
     </tfoot>
   </table>
+  </form>
 
 </div>

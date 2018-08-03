@@ -4,6 +4,7 @@ import {RoomsService} from './rooms.service';
 import {Sort} from '@angular/material';
 import {ExcelService} from '../../../../shared/exportasExcel.service';
 import {ActivatedRoute, Data, Params, Router} from '@angular/router';
+import {NgForm} from '@angular/forms';
 
 
 @Component({
@@ -15,6 +16,7 @@ import {ActivatedRoute, Data, Params, Router} from '@angular/router';
 
 export class RoomsDetailComponent implements OnInit {
 
+  @ViewChild('newRoomData') newRoomDetails: NgForm;
   @ViewChild('roomName') roomNameRef: ElementRef;
   @ViewChild('roomDescription') roomDescriptionRef: ElementRef;
   @ViewChild('hospitalName') hospitalNameRef: ElementRef;
@@ -66,7 +68,8 @@ export class RoomsDetailComponent implements OnInit {
     const newStatus = this.statusRef.nativeElement.value;
 
     const newRoom = new Rooms(newRoomId, newRoomName, newRoomDescription, newHospitalName, newProtocolName, newCreatedDate, newStatus, null);
-    console.log(newRoom);
+    console.log('addmenthod');
+    console.log(this.newRoomDetails);
     //check if inputs are null
     this.roomsService.addRoom(newRoom);
 
