@@ -18,6 +18,7 @@ import {AppRoutingModule, routingComponents} from './app-routing.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { RoomManagementComponent } from './rightpane/hospital-management/room-management/room-management.component';
 import { TableComponentComponent } from './shared/table-component/table-component.component';
+import {HttpModule} from '@angular/http';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { TableComponentComponent } from './shared/table-component/table-componen
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpModule
   ],
   providers: [ExcelService],
   bootstrap: [AppComponent]

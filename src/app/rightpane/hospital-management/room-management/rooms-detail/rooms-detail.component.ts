@@ -39,8 +39,20 @@ export class RoomsDetailComponent implements OnInit {
 
 
   ngOnInit() {
-    this.rooms = this.roomsService.getRooms();
-    this.sortedData = this.rooms.slice();
+     // this.rooms = this.roomsService.getRooms();
+    this.roomsService.getFromServer()
+      .subscribe(
+          // console.log('get servers data in Init');
+          // console.log(rooms);
+          res => {
+            this.rooms = res;
+            console.log('get server data');
+            console.log(this.rooms);
+          }
+
+      );
+    console.log('Init 3' + this.rooms);
+    // this.sortedData = this.rooms.slice();
     this.roomsService.roomsChanged.subscribe(
       (rooms: Rooms[]) => {
         this.rooms = rooms;
@@ -55,6 +67,9 @@ export class RoomsDetailComponent implements OnInit {
         }
       );
     console.log('Init 2' + this.room);
+
+
+
   }
 
   // Methods
@@ -72,7 +87,10 @@ export class RoomsDetailComponent implements OnInit {
     console.log(this.newRoomDetails);
     //check if inputs are null
     this.roomsService.addRoom(newRoom);
-
+    this.roomsService.putToServer(this.rooms)
+      .subscribe(
+        (repsonse) => console.log(repsonse)
+      );
     this.clearTextFields();
   }
 
@@ -100,6 +118,10 @@ export class RoomsDetailComponent implements OnInit {
   saveRoom(modifiedRoom: Rooms) {
 
     this.roomsService.saveRoom(modifiedRoom);
+    this.roomsService.putToServer(this.rooms)
+      .subscribe(
+        (repsonse) => console.log(repsonse)
+      );
     console.log('save' + modifiedRoom);
     this.editRowId = -1;
     this.router.navigate(['/rooms-detail', modifiedRoom.roomId], {relativeTo: this.route, queryParamsHandling: 'preserve'});
