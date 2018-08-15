@@ -21,3 +21,6 @@
 .pagination {
   margin: 0px;
 }
+.form-control.ng-touched.ng-invalid {
+  border: 2px solid indianred;
+}

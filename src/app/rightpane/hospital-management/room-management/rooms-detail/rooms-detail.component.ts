@@ -5,6 +5,7 @@ import {Sort} from '@angular/material';
 import {ExcelService} from '../../../../shared/exportasExcel.service';
 import {ActivatedRoute, Data, Params, Router} from '@angular/router';
 import {NgForm} from '@angular/forms';
+import {RoomProtocol} from '../room-protocol.model';
 
 
 @Component({
@@ -16,18 +17,14 @@ import {NgForm} from '@angular/forms';
 
 export class RoomsDetailComponent implements OnInit {
 
-  @ViewChild('newRoomData') newRoomDetails: NgForm;
-  @ViewChild('roomName') roomNameRef: ElementRef;
-  @ViewChild('roomDescription') roomDescriptionRef: ElementRef;
-  @ViewChild('hospitalName') hospitalNameRef: ElementRef;
-  @ViewChild('roomProtocolName') roomProtocolNameRef: ElementRef;
-  @ViewChild('createdDate') createdDateRef: ElementRef;
-  @ViewChild('status') statusRef: ElementRef;
+  @ViewChild('roomsData') roomsForm: NgForm;
 
+/*
   room: Rooms;
-  rooms: Rooms[];
+*/
+  rooms: Rooms[] = [];
   sortedData: Rooms[];
-  isEditable: boolean = false;
+  isEditable = false;
   editRowId: any = '';
 
   constructor(private roomsService: RoomsService,
@@ -38,93 +35,90 @@ export class RoomsDetailComponent implements OnInit {
   }
 
 
-  ngOnInit() {
-     // this.rooms = this.roomsService.getRooms();
-    this.roomsService.getFromServer()
-      .subscribe(
-          // console.log('get servers data in Init');
-          // console.log(rooms);
-          res => {
-            this.rooms = res;
-            console.log('get server data');
-            console.log(this.rooms);
-          }
+  ngOnInit(): any {
 
-      );
-    console.log('Init 3' + this.rooms);
-    // this.sortedData = this.rooms.slice();
+    this.rooms = this.roomsService.getRooms();
+    this.sortedData = this.rooms.slice();
     this.roomsService.roomsChanged.subscribe(
       (rooms: Rooms[]) => {
         this.rooms = rooms;
       }
     );
-    console.log('Init 1' + this.rooms);
 
-    this.route.params
+   /* this.route.params
       .subscribe(
         (params: Params) => {
-          this.room = this.roomsService.getRoomById(+params['id']);
+          this.room = this.roomsService.getRoomByName(+params['id']);
         }
-      );
-    console.log('Init 2' + this.room);
-
+      );*/
 
 
   }
 
-  // Methods
-  addRoom() {
+  // CRUD Operations
+  addRoom(newRoomForm: NgForm) {
+
+    const newRoomValues = newRoomForm.value;
+
+    const newRoomProtocol = new RoomProtocol(1,
+      newRoomValues.newRomProtocolName,
+      'rpDesc',
+      newRoomValues.newHospitalName,
+      2,
+      22,
+      true,
+      'dt',
+      'test user',
+      true);
+/*
     const newRoomId = this.roomsService.generateNewRoomId();
-    const newRoomName = this.roomNameRef.nativeElement.value;
-    const newRoomDescription = this.roomDescriptionRef.nativeElement.value;
-    const newHospitalName = this.hospitalNameRef.nativeElement.value;
-    const newProtocolName = this.roomProtocolNameRef.nativeElement.value;
-    const newCreatedDate = this.createdDateRef.nativeElement.value;
-    const newStatus = this.statusRef.nativeElement.value;
+*/
 
-    const newRoom = new Rooms(newRoomId, newRoomName, newRoomDescription, newHospitalName, newProtocolName, newCreatedDate, newStatus, null);
-    console.log('addmenthod');
-    console.log(this.newRoomDetails);
-    //check if inputs are null
-    this.roomsService.addRoom(newRoom);
-    this.roomsService.putToServer(this.rooms)
-      .subscribe(
-        (repsonse) => console.log(repsonse)
-      );
-    this.clearTextFields();
-  }
+    const newRoom = new Rooms(newRoomProtocol,
+      -1,
+      newRoomValues.newRoomName,
+      newRoomValues.newRoomDescription,
+      newRoomValues.newHospitalName,
+      newRoomValues.newRoomProtocolName,
+      newRoomValues.newCreatedDate,
+      newRoomValues.newStatus);
 
-  editRoom(roomId: number) {
-
-    this.editRowId = roomId;
-    this.router.navigate(['/rooms-detail', roomId], {relativeTo: this.route, queryParamsHandling: 'preserve'});
-    this.roomsService.editRoom(roomId);
-  /*  if (true) {
-      // save
-      this.saveRoom(roomId);
+    // check if room already exists
+    if (this.rooms == null) {
+      this.roomsService.addRoom(newRoom);
     } else {
-      // cancel
-      this.cancelSavedRoom(roomId);
-    }*/
+      const isPresent = this.roomExists(newRoom);
+      if (!isPresent) {
+        this.roomsService.addRoom(newRoom);
+      } else {
+        alert('Room already exists');
+      }
+    }
+    // clear data
+    this.onClear();
   }
 
-  deleteRoom(roomId: number) {
-    console.log(roomId);
-    this.roomsService.deleteRoom(roomId);
-    this.router.navigate(['/rooms-detail', roomId], {relativeTo: this.route, queryParamsHandling: 'preserve'});
+
+  editRoom(currentRoomId: number) {
+    this.editRowId = currentRoomId;
+    this.router.navigate(['/rooms-detail', currentRoomId], {relativeTo: this.route, queryParamsHandling: 'preserve'});
+    this.roomsService.startedEditing.next(currentRoomId);
+    // this.roomsService.updateRoom(currentRoomId);
+  }
+
+  deleteRoom(roomIndex: number) {
+    this.roomsService.deleteRoom(roomIndex);
+    this.router.navigate(['/rooms-detail'], {relativeTo: this.route, queryParamsHandling: 'preserve'});
 
   }
 
   saveRoom(modifiedRoom: Rooms) {
 
-    this.roomsService.saveRoom(modifiedRoom);
-    this.roomsService.putToServer(this.rooms)
-      .subscribe(
-        (repsonse) => console.log(repsonse)
-      );
-    console.log('save' + modifiedRoom);
-    this.editRowId = -1;
-    this.router.navigate(['/rooms-detail', modifiedRoom.roomId], {relativeTo: this.route, queryParamsHandling: 'preserve'});
+    if (this.updatedRoomIsValid()) {
+      this.roomsService.saveRoom(modifiedRoom);
+      this.editRowId = -1;
+      this.router.navigate(['/rooms-detail'], {relativeTo: this.route, queryParamsHandling: 'preserve'});
+    }
   }
 
   cancelSavedRoom(roomIndex) {
@@ -132,7 +126,6 @@ export class RoomsDetailComponent implements OnInit {
     this.editRowId = -1;
     this.hideMenu();
   }
-
 
 
   // Sorting
@@ -145,10 +138,10 @@ export class RoomsDetailComponent implements OnInit {
     this.sortedData = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'roomName':
-          return compare(a.roomName, b.roomName, isAsc);
-        case 'roomDescription':
-          return compare(a.roomDescription, b.roomDescription, isAsc);
+        case 'name':
+          return compare(a.name, b.name, isAsc);
+        case 'description':
+          return compare(a.description, b.description, isAsc);
         case 'hospitalName':
           return compare(a.hospitalName, b.hospitalName, isAsc);
         case 'roomProtocolName':
@@ -168,24 +161,35 @@ export class RoomsDetailComponent implements OnInit {
     this.sortData($event);
   }
 
-  private clearTextFields() {
-    this.roomNameRef.nativeElement.value = '';
-    this.roomDescriptionRef.nativeElement.value = '';
-    this.hospitalNameRef.nativeElement.value = '';
-    this.roomProtocolNameRef.nativeElement.value = '';
-    this.createdDateRef.nativeElement.value = '';
-    this.statusRef.nativeElement.value = '';
-  }
-
   private hideMenu() {
 
   }
 
+  // export to excel
   tableToExcel() {
     this.excelService.exportAsExcelFile(this.rooms, 'roomsSample');
   }
 
+  onClear() {
+    this.roomsForm.reset();
 
+  }
+
+  // Validations
+  updatedRoomIsValid() {
+
+    const updatedRoomValues = this.roomsForm.value;
+
+    return updatedRoomValues.editedRoomName !== null &&
+      updatedRoomValues.editedRoomDescription !== null &&
+      updatedRoomValues.editedRoomProtocol !== null &&
+      updatedRoomValues.editedStatus != null &&
+      !this.roomExists(updatedRoomValues);
+  }
+
+  private roomExists(newRoom) {
+    return this.rooms.some((el) => el.hospitalName === newRoom.hospitalName && el.name === newRoom.name);
+  }
 }
 
 function compare(a, b, isAsc) {

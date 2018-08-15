@@ -19,6 +19,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { RoomManagementComponent } from './rightpane/hospital-management/room-management/room-management.component';
 import { TableComponentComponent } from './shared/table-component/table-component.component';
 import {HttpModule} from '@angular/http';
+import { FilterRoomsPipe } from './shared/filter-rooms.pipe';
+import { SortRoomsPipe } from './shared/sort-rooms.pipe';
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import {HttpModule} from '@angular/http';
     SortedTableDirective,
     routingComponents,
     RoomManagementComponent,
-    TableComponentComponent
+    TableComponentComponent,
+    FilterRoomsPipe,
+    SortRoomsPipe,
 
   ],
   imports: [

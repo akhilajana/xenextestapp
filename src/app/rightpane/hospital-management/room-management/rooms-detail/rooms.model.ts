@@ -1,13 +1,18 @@
+import {RoomProtocol} from '../room-protocol.model';
+
 export class Rooms {
 
-  public isEditable : boolean = false;
+  /*public isEditable = false;
+  public updateRoom: string;*/
 
-  constructor( public roomId: number,
-               public roomName: string,
-               public roomDescription: string,
+
+  constructor( public roomProtocol: RoomProtocol,
+               public id: number,
+               public name: string,
+               public description: string,
                public hospitalName: string,
                public roomProtocolName: string,
-               public createdOn: string,
-               public status: string,
-               public editRoom: string) {}
+               public createdOn: Date,
+               public status: boolean
+               ) {}
 }
