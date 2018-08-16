@@ -1,11 +1,11 @@
 import {Component, ElementRef, NgModule, OnInit, ViewChild} from '@angular/core';
 import {Rooms} from './rooms.model';
 import {RoomsService} from './rooms.service';
-import {Sort} from '@angular/material';
 import {ExcelService} from '../../../../shared/exportasExcel.service';
-import {ActivatedRoute, Data, Params, Router} from '@angular/router';
+import {ActivatedRoute, Data, Params, Router, RouterStateSnapshot} from '@angular/router';
 import {NgForm} from '@angular/forms';
 import {RoomProtocol} from '../room-protocol.model';
+import {Observable} from 'rxjs';
 
 
 @Component({
@@ -19,10 +19,7 @@ export class RoomsDetailComponent implements OnInit {
 
   @ViewChild('roomsData') roomsForm: NgForm;
 
-/*
-  room: Rooms;
-*/
-  rooms: Rooms[] = [];
+  roomsList: Rooms[] = [];
   sortedData: Rooms[];
   isEditable = false;
   editRowId: any = '';
@@ -37,22 +34,14 @@ export class RoomsDetailComponent implements OnInit {
 
   ngOnInit(): any {
 
-    this.rooms = this.roomsService.getRooms();
-    this.sortedData = this.rooms.slice();
+    this.roomsList = this.roomsService.getRoomsByOrganizationId(267175);
+    console.log(this.roomsList);
+    this.sortedData = this.roomsList.slice();
     this.roomsService.roomsChanged.subscribe(
       (rooms: Rooms[]) => {
-        this.rooms = rooms;
+        this.roomsList = rooms;
       }
     );
-
-   /* this.route.params
-      .subscribe(
-        (params: Params) => {
-          this.room = this.roomsService.getRoomByName(+params['id']);
-        }
-      );*/
-
-
   }
 
   // CRUD Operations
@@ -60,31 +49,18 @@ export class RoomsDetailComponent implements OnInit {
 
     const newRoomValues = newRoomForm.value;
 
-    const newRoomProtocol = new RoomProtocol(1,
-      newRoomValues.newRomProtocolName,
-      'rpDesc',
-      newRoomValues.newHospitalName,
-      2,
-      22,
-      true,
-      'dt',
-      'test user',
-      true);
-/*
-    const newRoomId = this.roomsService.generateNewRoomId();
-*/
-
-    const newRoom = new Rooms(newRoomProtocol,
-      -1,
-      newRoomValues.newRoomName,
-      newRoomValues.newRoomDescription,
-      newRoomValues.newHospitalName,
-      newRoomValues.newRoomProtocolName,
-      newRoomValues.newCreatedDate,
-      newRoomValues.newStatus);
+    const newRoom = new Rooms(new RoomProtocol(null, newRoomValues.newRoomProtocolName, null, null, null, null, null, null, null, null, null),
+                              -1,
+                              newRoomValues.newRoomName,
+                              newRoomValues.newRoomDescription,
+                              newRoomValues.newCreatedDate,
+                              'test user',
+                              newRoomValues.modifiedOn,
+                              'test user 2',
+                              newRoomValues.newStatus);
 
     // check if room already exists
-    if (this.rooms == null) {
+    if (this.roomsList == null) {
       this.roomsService.addRoom(newRoom);
     } else {
       const isPresent = this.roomExists(newRoom);
@@ -106,8 +82,8 @@ export class RoomsDetailComponent implements OnInit {
     // this.roomsService.updateRoom(currentRoomId);
   }
 
-  deleteRoom(roomIndex: number) {
-    this.roomsService.deleteRoom(roomIndex);
+  deleteRoom(roomIndex: number, roomId: number) {
+    this.roomsService.deleteRoom(roomIndex, roomId);
     this.router.navigate(['/rooms-detail'], {relativeTo: this.route, queryParamsHandling: 'preserve'});
 
   }
@@ -129,8 +105,8 @@ export class RoomsDetailComponent implements OnInit {
 
 
   // Sorting
-  sortData(sort: Sort) {
-    const data = this.rooms.slice();
+ /* sortData(sort: Sort) {
+    const data = this.roomsList.slice();
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -142,23 +118,23 @@ export class RoomsDetailComponent implements OnInit {
           return compare(a.name, b.name, isAsc);
         case 'description':
           return compare(a.description, b.description, isAsc);
-        case 'hospitalName':
+        /!*case 'hospitalName':
           return compare(a.hospitalName, b.hospitalName, isAsc);
         case 'roomProtocolName':
-          return compare(a.roomProtocolName, b.roomProtocolName, isAsc);
+          return compare(a.roomProtocolName, b.roomProtocolName, isAsc);*!/
         case 'createdOn':
           return compare(a.createdOn, b.createdOn, isAsc);
         case 'status':
-          return compare(a.status, b.status, isAsc);
+          return compare(a.isActive, b.isActive, isAsc);
         default:
           return 0;
       }
-    });
-  }
+    });*/
+
 
   onSorted($event: any) {
     console.log($event);
-    this.sortData($event);
+    // this.sortData($event);
   }
 
   private hideMenu() {
@@ -167,7 +143,7 @@ export class RoomsDetailComponent implements OnInit {
 
   // export to excel
   tableToExcel() {
-    this.excelService.exportAsExcelFile(this.rooms, 'roomsSample');
+    this.excelService.exportAsExcelFile(this.roomsList, 'roomsSample');
   }
 
   onClear() {
@@ -188,7 +164,7 @@ export class RoomsDetailComponent implements OnInit {
   }
 
   private roomExists(newRoom) {
-    return this.rooms.some((el) => el.hospitalName === newRoom.hospitalName && el.name === newRoom.name);
+    return this.roomsList.some((el) => /*el.hospitalName === newRoom.hospitalName &&*/ el.name === newRoom.name);
   }
 }
 

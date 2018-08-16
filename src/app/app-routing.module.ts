@@ -20,7 +20,7 @@ const appRoutes: Routes = [
       {path: 'room-protocols', component: RoomsDetailComponent},
       {path: 'room-states', component: RoomsDetailComponent},
       {path: 'room-units', component: RoomsDetailComponent},
-      {path: 'rooms-bulk-upload', component: RoomsDetailComponent}
+      {path: 'roomsList-bulk-upload', component: RoomsDetailComponent}
 
 
 

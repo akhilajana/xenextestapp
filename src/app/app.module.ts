@@ -14,6 +14,7 @@ import {DropdownDirective} from './shared/dropdown.directive';
 import { SortableColumnComponent } from './shared/sortable-column/sortable-column.component';
 import { SortedTableDirective } from './shared/sortable-column/sorted-table.directive';
 import {ExcelService} from './shared/exportasExcel.service';
+import {DataStorageService} from './shared/data-storage/data-storage.service';
 import {AppRoutingModule, routingComponents} from './app-routing.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { RoomManagementComponent } from './rightpane/hospital-management/room-management/room-management.component';

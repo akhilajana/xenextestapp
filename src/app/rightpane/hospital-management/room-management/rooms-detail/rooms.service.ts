@@ -1,127 +1,80 @@
 import {Rooms} from './rooms.model';
 import {Injectable} from '@angular/core';
-import {HttpService} from '../../../../shared/http-service/http-service.service';
-import {Subject} from 'rxjs';
-import { Response } from '@angular/http';
+import {Observable, Subject, throwError} from 'rxjs';
+import {Headers, Http, Response} from '@angular/http';
 import {DataStorageService} from '../../../../shared/data-storage/data-storage.service';
+import {HttpService} from '../../../../shared/http-service/http-service.service';
+import {catchError, map} from 'rxjs/operators';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
 export class RoomsService {
 
-  private roomsList: Rooms[] = [
-    new Rooms(null,
-      1,
-      'atest',
-      'testDesc',
-      'testHosp',
-      'testProtocol',
-      new Date(new Date().setDate(new Date().getDate() - 1)),
-      true
-    ),
-    new Rooms(
-      null,
-      2,
-      'btest',
-      'testDesc',
-      'testHosp',
-      'testProtocol',
-      new Date(),
-      false
-    ),
-    new Rooms(
-      null,
-      3,
-      'ctest',
-      'testDesc',
-      'testHosp',
-      'testProtocol',
-      new Date(new Date().setDate(new Date().getDate() - 3)),
-     true
-    )
-  ];
-
+  private roomsList: Rooms[] = [];
   roomsChanged = new Subject<Rooms[]>();
   startedEditing = new Subject<number>();
-  /*roomId = 3;
-  private newRoomId: number;*/
+  private room = '';
+  private headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'X-Requested-With,content-type'
+  });
 
-  constructor(private _httpService: HttpService,  private dataStorageService: DataStorageService) {}
 
-  getRooms() {
-    // this._httpService.getRoomsData()
-    //   .subscribe(
-    //     (data) => {
-    //                 this.roomsList.push(data);
-    //             },
-    //     (err) => console.log(err),
-    //     () => console.log('done loading rooms')
-    //
-    //   );
-    console.log(this.roomsList);
-    return this.roomsList;
-
+  constructor(private dataStorageService: DataStorageService) {
   }
 
-  /*getRoomByName(roomName: string, hospitalName: string) {
-    const room = this.roomsList.find(
-      (s) => {
-        return s.name === roomName && s.hospitalName === hospitalName;
-      }
-    );
-    return room;
-  }*/
+  getRoomsByOrganizationId(organizationId: number): Rooms[] {
 
-  // generateNewRoomId() {
-  //   this.newRoomId = this.roomId + 1;
-  //   this.roomId = this.newRoomId;
-  //   return this.roomId;
-  // }
-
-  addRoom(room: Rooms) {
-      this.roomsList.push(room);
-      this.storeRoomsData(room);
-      this.roomsChanged.next(this.roomsList.slice());
-  }
-
-  private addToRoomsList(room: Rooms) {
-   /* this._httpService.put(this.roomsList, 'rooms')
+    this.dataStorageService.fetchRooms(organizationId)
       .subscribe(
-        (repsonse) => console.log(repsonse)
-      );*/
+        (data: Rooms[]) => { this.roomsList.push(data); },
+        error1 => {console.log(error1); },
+        () => { console.log( this.roomsList); }
+      );
+    return this.roomsList;
+  }
+
+  // CRUD Operations
+  addRoom(room: Rooms) {
+    // this.roomsList.push(room); // adds it to local list - manages th table
+    this.storeRoomsData(room); // adding it to server
     this.roomsChanged.next(this.roomsList.slice());
   }
 
-  updateRoom(roomIndex: number) {
-    // this.roomsList[roomIndex] = newRoomDetails;
-    this.roomsChanged.next(this.roomsList.slice());
-  }
-
-  deleteRoom(roomId: number) {
-
-    this.roomsList.splice(roomId, 1);
-    // this._httpService.put(this.roomsList, 'rooms');
+  deleteRoom(roomIndex: number, roomId: number) {
+    this.roomsList.splice(roomIndex, 1);
+    console.log('roomId' + roomId);
+    this.dataStorageService.deleteRooms(roomId)
+      .subscribe(
+        () => console.log('Room with id' + roomIndex + ' deleted'),
+        (error1 => console.log('Error in deleting room' + error1))
+      );
     this.roomsChanged.next(this.roomsList.slice());
   }
 
   saveRoom(modifiedRoom: Rooms) {
     const indexOfItemInArray = this.roomsList.findIndex(q => q.id === modifiedRoom.id);
     this.roomsList.splice(indexOfItemInArray, 1, modifiedRoom);
-    /*this._httpService.put(this.roomsList, 'rooms')
+    this.storeRoomsData(modifiedRoom);
+    /*this._httpService.put(this.roomsList, 'roomsList')
       .subscribe(
         (repsonse) => console.log(repsonse)
       );*/
     this.roomsChanged.next(this.roomsList.slice());
   }
 
+  // Server calls
   storeRoomsData(newRoom: Rooms) {
     this.dataStorageService.storeRooms(newRoom)
       .subscribe(
-        (response: Response) => {
+        (data: Rooms) => {
           console.log('store data');
-          console.log(response);
+          console.log(data);
+        },
+        (error: any) => {
+          console.log(error);
         }
       );
   }
-
-
 }

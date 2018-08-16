@@ -1,10 +1,10 @@
 <div class="table-responsive">
 
-  <!--<nv-editable-table [tableHeaders]="roomHeaders" [tableRows]="rooms"></nv-editable-table>-->
+  <!--<nv-editable-table [tableHeaders]="roomHeaders" [tableRows]="roomsList"></nv-editable-table>-->
   <form #roomsData="ngForm" (ngSubmit)="addRoom(roomsData)">
 
     <table class="table table-sm table-bordered table-hover" data-page-length='10' appSortedTable
-           (sorted)="onSorted($event)" id="roomsTable">
+            id="roomsTable">
 
       <thead>
       <tr>
@@ -58,7 +58,7 @@
 
       </tr>
 
-      <tr *ngFor="let room of rooms | sortRooms: '-createdOn'| filterRooms: newRoomName.value: 'name'; let roomIndex = index">
+      <tr *ngFor="let room of roomsList | sortRooms: '-createdOn'| filterRooms: newRoomName.value: 'name'; let roomIndex = index">
         <td>
           <span *ngIf="room.id!==editRowId">{{room.name}}</span>
           <input *ngIf="room.id===editRowId" type="text" name="editedRoomName" class=" input-sm form-control" [(ngModel)]="room.name"
@@ -71,26 +71,26 @@
                  #editedRoomDescription="ngModel"/>
         </td>
         <td>
-          <span *ngIf=" room.id!==editRowId">{{room.hospitalName}}</span>
+          <span *ngIf=" room.id!==editRowId">Test Hospital</span>
           <input *ngIf=" room.id===editRowId" type="text" name="editedHospitalName" class="input-sm form-control"
-                 [(ngModel)]="room.hospitalName"  required readonly />
+                  required readonly />
 
         </td>
         <td>
-          <span *ngIf=" room.id!==editRowId">{{room.roomProtocolName}}</span>
+          <span *ngIf=" room.id!==editRowId">{{room.roomProtocol.name}}</span>
           <input *ngIf=" room.id===editRowId" type="text" name="editedRoomProtocolName" class="input-sm form-control"
-                 [(ngModel)]="room.roomProtocolName" placeholder="Room Protocol Name" required
+                 [(ngModel)]="room.roomProtocol.name" placeholder="Room Protocol Name" required
                  #editedRoomProtocol="ngModel"/>
         </td>
         <td>
           <span *ngIf=" room.id!==editRowId">{{room.createdOn}}</span>
-          <input *ngIf=" room.id===editRowId" type="text" name="editedCreatedOn" class="input-sm form-control"
+          <input *ngIf=" room.id===editRowId" type="text" name="modifiedOn" class="input-sm form-control"
                  [(ngModel)]="room.createdOn" required readonly />
         </td>
         <td>
-          <span *ngIf=" room.id!==editRowId">{{room.status}}</span>
+          <span *ngIf=" room.id!==editRowId">{{room.isActive}}</span>
           <input *ngIf=" room.id===editRowId" type="checkbox" name="editedStatus" class="input-sm form-control"
-                 [(ngModel)]="room.status" placeholder="Status" required #editedStatus="ngModel"/>
+                 [(ngModel)]="room.isActive" required #editedStatus="ngModel"/>
         </td>
         <td>
           <a>
@@ -100,7 +100,7 @@
           </a> &nbsp;
           <a>
             <span *ngIf="room.id!==editRowId" class="glyphicon glyphicon-trash red"
-                  (click)="deleteRoom(roomIndex)"></span>
+                  (click)="deleteRoom(roomIndex, room.id)"></span>
             <span *ngIf="room.id===editRowId" class="glyphicon glyphicon-floppy-remove red"
                   (click)="cancelSavedRoom(roomIndex)"></span>
           </a>
